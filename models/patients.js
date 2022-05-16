@@ -2,30 +2,52 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "MyNewproject";
+require("dotenv").config();
+
 const patientSchema = mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
   name: {
     type: String,
     required: true,
     trim: true,
   },
-  Age: {
-    type: Number,
+  lastVisitedDate: {
+    type: Date,
+    required: false,
+  },
+  age: {
+    type: String,
     required: true,
   },
-  Address: {
+  address: {
     type: String,
     required: false,
     trim: true,
   },
-  consultingDoctor: {
+  doctorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    // type: String,
+    required: false,
+    ref: "doctors",
+  },
+  diagnosis: {
     type: String,
-    required: true,
-    trim: true,
+    required: false,
+  },
+  description: {
+    type: String,
+    required: false,
+  },
+  advice: {
+    type: String,
+    required: false,
+  },
+  startDate: {
+    type: Date,
+    required: false,
+  },
+  endDate: {
+    type: Date,
+    required: false,
   },
   email: {
     type: String,
@@ -54,15 +76,19 @@ const patientSchema = mongoose.Schema({
     {
       dose: {
         type: Number,
-        required: true,
+        required: false,
       },
       time: {
         type: String,
-        required: true,
+        required: false,
       },
     },
   ],
   status: {
+    type: String,
+    required: false,
+  },
+  gender: {
     type: String,
     required: false,
   },
@@ -75,12 +101,24 @@ const patientSchema = mongoose.Schema({
     },
   ],
 });
+
+patientSchema.methods.toJSON = function () {
+  const patient = this;
+  const patientObject = patient.toObject();
+  delete patientObject.password;
+  // delete patientObject.tokens;
+  return patientObject;
+};
+
 patientSchema.methods.generateAuthToken = async function () {
   const patient = this;
-  const token = jwt.sign({ _id: patient.id.toString() }, jwtSecret);
-  patient.tokens = patient.tokens.concat({ token });
-
-  await patient.save();
+  console.log(patient._id.toString());
+  const token = jwt.sign(
+    { _id: patient._id.toString() },
+    process.env.JWT_SECRET
+  );
+  // patient.tokens = patient.tokens.concat({ token });
+  // await patient.save();
 
   return token;
 };
