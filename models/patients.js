@@ -1,30 +1,31 @@
 const mongoose = require("mongoose");
-//const validator = require("validator");
-//const bcrypt = require("bcryptjs");
-//const jwt = require("jsonwebtoken");
+const validator = require("validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const jwtSecret = "MyNewproject";
 const patientSchema = mongoose.Schema({
-  id:{
+  id: {
     type: String,
-    required: true
+    required: true,
   },
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   Age: {
     type: Number,
-    required: true
+    required: true,
   },
   Address: {
     type: String,
     required: false,
-    trim: true
+    trim: true,
   },
   consultingDoctor: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
@@ -38,15 +39,26 @@ const patientSchema = mongoose.Schema({
       }
     },
   },
+  password: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 7,
+    validate(value) {
+      if (value.toLowerCase().includes("password")) {
+        throw new Error("Password can not conatin 'password'");
+      }
+    },
+  },
   medicines: [
     {
       dose: {
         type: Number,
-        required: true
+        required: true,
       },
       time: {
         type: String,
-        required: true
+        required: true,
       },
     },
   ],
@@ -54,7 +66,39 @@ const patientSchema = mongoose.Schema({
     type: String,
     required: false,
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
+patientSchema.methods.generateAuthToken = async function () {
+  const patient = this;
+  const token = jwt.sign({ _id: patient.id.toString() }, jwtSecret);
+  patient.tokens = patient.tokens.concat({ token });
 
-const patientmodel= mongoose.model('patients',patientSchema);
-module.exports = patientmodel;
+  await patient.save();
+
+  return token;
+};
+
+patientSchema.statics.findByCredentials = async (email, password) => {
+  const patient = await Patient.findOne({ email: email });
+  if (!patient) {
+    throw new Error("Unable to login");
+  }
+
+  console.log(password, patient.password);
+  const isMatch = await bcrypt.compare(password, patient.password);
+  console.log(isMatch);
+  if (!isMatch) {
+    throw new Error("Unable to login");
+  }
+  return patient;
+};
+
+const Patient = mongoose.model("patients", patientSchema);
+module.exports = Patient;

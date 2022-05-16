@@ -1,16 +1,18 @@
-const  mongoose  = require("mongoose");
-           mongodb+srv://Nikita:@dod00@cluster0.ttzm3.mongodb.net/test
-var mongoURL= 'mongodb+srv://Nikita:%40dod00@cluster0.ttzm3.mongodb.net/DoctorOnDemand'
+const mongoose = require("mongoose");
 
-mongoose.connect(mongoURL, {useUnifiedTopology : true, useNewUrlParser:true})
+// var mongoURL ="mongodb+srv://a_shrimali_19:Ashish@1111@cluster0.ogzhh.mongodb.net/doctorOnDemand";
+var mongoURL =
+  "mongodb+srv://a_shrimali_19:Ashish%401111@cluster0.ogzhh.mongodb.net/doctorOnDemand";
+
+mongoose.connect(mongoURL, { useUnifiedTopology: true, useNewUrlParser: true });
 
 var connection = mongoose.connection;
 
-connection.on('error', ()=>{
-    console.log('Mongo DB Connection failed');
-})
+connection.on("error", () => {
+  console.log("Mongo DB Connection failed");
+});
 
-connection.on('connected', ()=>{
-    console.log('Mongo DB Connection successful');
-})
-module.exports=mongoose
+connection.on("connected", () => {
+  console.log("Mongo DB Connection successful");
+});
+module.exports = mongoose;
