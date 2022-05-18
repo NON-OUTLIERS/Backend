@@ -4,16 +4,16 @@ const Doctors = require("../models/doctors");
 const Patients = require("../models/patients");
 const bcrypt = require("bcryptjs");
 const patientauth = require("../middleware/patientauth");
-const doctorauth = require("../middleware/doctorauth");
+const {doctorauth} = require("../middleware/doctorauth");
+const {generateID} = require('../util/GenerateId');
+
 router.get("/getallpatients", doctorauth, async (req, res) => {
-  console.log("hello");
   try {
     console.log(req.body.doctor);
-    const _id = req.body.doctor._id;
-    const ptnts = await Patients.find({doctorId:_id }).populate("getpatients").exec((error,data)=>{
-        
-    });
-    return res.send(ptnts);
+    const doctorId = req.body.doctor.doctorId;
+    const allPatients = await Patients.find({doctorId: doctorId });
+    console.log(allPatients)
+    return res.status(200).send(allPatients);
   } catch (error) {
     // console.log("error");
     return res.status(400).json({ message: error });
@@ -28,7 +28,9 @@ router.get("/getallpatients", doctorauth, async (req, res) => {
 //   });
 
 router.post("/signup", async (req, res) => {
-  const doctor = new Doctors(req.body);
+  const doctorId = generateID(6);
+  console.log(doctorId);
+  const doctor = new Doctors({...req.body, doctorId});
   try {
     doctor.password = await bcrypt.hash(req.body.password, 8);
     await doctor.save();
@@ -49,7 +51,7 @@ router.post("/login", async (req, res) => {
       req.body.password
     );
     const token = await doctor.generateAuthToken();
-    res.send({ doctor, token });
+    res.send({ userId: doctor.doctorId, token: token});
   } catch (e) {
     res.status(400).send();
   }

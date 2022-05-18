@@ -15,7 +15,7 @@ const patientauth = async (req, res, next) => {
     }
 
     // req.token = token;
-    req.body.patient = patient;
+    req.patient = patient;
     // console.log(req.body.patient)
     next();
   } catch (e) {
