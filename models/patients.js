@@ -11,12 +11,12 @@ const patientSchema = mongoose.Schema({
     trim: true,
   },
   lastVisitedDate: {
-    type: Date,
+    type: String,
     required: false,
   },
   age: {
     type: String,
-    required: true,
+    required: false,
   },
   address: {
     type: String,
@@ -24,10 +24,14 @@ const patientSchema = mongoose.Schema({
     trim: true,
   },
   doctorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     // type: String,
     required: false,
     ref: "doctors",
+  },
+  age: {
+    type: String, 
+    required: false,
   },
   diagnosis: {
     type: String,
@@ -37,16 +41,20 @@ const patientSchema = mongoose.Schema({
     type: String,
     required: false,
   },
+  study: {
+    type: String,
+    required: false
+  },
   advice: {
     type: String,
     required: false,
   },
   startDate: {
-    type: Date,
+    type: String,
     required: false,
   },
   endDate: {
-    type: Date,
+    type: String,
     required: false,
   },
   email: {
@@ -75,13 +83,17 @@ const patientSchema = mongoose.Schema({
   medicines: [
     {
       dose: {
-        type: Number,
+        type: String,
+        required: false,
+      },
+      name: {
+        type: String,
         required: false,
       },
       time: {
         type: String,
         required: false,
-      },
+      }
     },
   ],
   status: {
@@ -92,14 +104,18 @@ const patientSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  prescription: {
+    type: String,
+    required: false,
+  },
+  doctorName: {
+    type: String,
+    required: false,
+  },
+  mobile: {
+    type: String, 
+    required: false,
+  }
 });
 
 patientSchema.methods.toJSON = function () {

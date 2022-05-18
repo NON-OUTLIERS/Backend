@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
-const Patient = require("../models/patients");
 const Doctor = require("../models/doctors");
 require("dotenv").config();
-const doctorauth = async (req, res, next) => {
+
+exports.doctorauth = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -12,6 +12,7 @@ const doctorauth = async (req, res, next) => {
     });
 
     if (!doctor) {
+      console.log('error')
       throw new Error("something had happened during authentication!!");
     }
 
@@ -24,4 +25,3 @@ const doctorauth = async (req, res, next) => {
   }
 };
 
-module.exports = doctorauth;
